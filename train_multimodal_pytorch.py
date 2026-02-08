@@ -35,17 +35,21 @@ warnings.filterwarnings('ignore')
 # ===================== GPU CONFIGURATION =====================
 DEVICE = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
+# Enable optimizations (silent, no print)
 if torch.cuda.is_available():
-    print(f"✓ GPU available: {torch.cuda.get_device_name(0)}")
-    print(f"✓ GPU Memory: {torch.cuda.get_device_properties(0).total_memory / 1024**3:.1f} GB")
-    # Enable TF32 for faster training on Ampere+ GPUs
     torch.backends.cuda.matmul.allow_tf32 = True
     torch.backends.cudnn.allow_tf32 = True
     torch.backends.cudnn.benchmark = True
-else:
-    print("⚠ No GPU detected. Training will run on CPU.")
 
-print(f"✓ Using device: {DEVICE}")
+
+def print_gpu_info():
+    """Print GPU info once in main process."""
+    if torch.cuda.is_available():
+        print(f"✓ GPU available: {torch.cuda.get_device_name(0)}")
+        print(f"✓ GPU Memory: {torch.cuda.get_device_properties(0).total_memory / 1024**3:.1f} GB")
+    else:
+        print("⚠ No GPU detected. Training will run on CPU.")
+    print(f"✓ Using device: {DEVICE}")
 
 # ===================== SEED & DETERMINISM =====================
 SEED = 42
@@ -71,7 +75,7 @@ OUTPUT_DIR = "outputs/"
 IMG_SIZE = 384
 BATCH_SIZE = 32  # Adjust based on GPU memory
 INITIAL_EPOCHS = 5  # Frozen backbone epochs
-FINETUNE_EPOCHS = 20  # Fine-tune epochs
+FINETUNE_EPOCHS = 30  # Fine-tune epochs
 INITIAL_LR = 1e-4
 FINETUNE_LR = 1e-5
 NUM_WORKERS = 4  # DataLoader workers
@@ -472,6 +476,9 @@ def main():
     print("=" * 60)
     print("HAM10000 Multimodal Classification Training (PyTorch)")
     print("=" * 60)
+    
+    # Print GPU info once
+    print_gpu_info()
     
     # Create output directory
     os.makedirs(OUTPUT_DIR, exist_ok=True)
