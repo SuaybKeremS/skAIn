@@ -12,7 +12,45 @@ import random
 import warnings
 import numpy as np
 import pandas as pd
+<<<<<<< HEAD
 import tensorflow as tf
+=======
+
+# ===================== GPU CONFIGURATION =====================
+# Must be set BEFORE importing tensorflow
+os.environ['CUDA_VISIBLE_DEVICES'] = '0'  # Only GPU 1 is visible
+os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
+os.environ['TF_GPU_ALLOCATOR'] = 'cuda_malloc_async'
+
+import tensorflow as tf
+
+# Log device placement to verify GPU usage
+tf.debugging.set_log_device_placement(False)  # Set to True to debug
+
+# Configure GPU
+gpus = tf.config.list_physical_devices('GPU')
+if gpus:
+    try:
+        # Set GPU 0 (the only visible one after CUDA_VISIBLE_DEVICES='1')
+        tf.config.set_visible_devices(gpus[0], 'GPU')
+        
+        # Allocate fixed 7GB memory to force GPU usage
+        tf.config.set_logical_device_configuration(
+            gpus[0],
+            [tf.config.LogicalDeviceConfiguration(memory_limit=7168)]  # 7GB of 8GB
+        )
+        print(f"✓ GPU configured: {gpus[0].name}")
+        print(f"✓ Memory allocated: 7GB (fixed)")
+    except RuntimeError as e:
+        print(f"GPU configuration error: {e}")
+else:
+    print("⚠ No GPU detected! Check CUDA installation.")
+    print("  Run: nvidia-smi to verify GPU is available")
+
+# Enable Mixed Precision for faster GPU training
+tf.keras.mixed_precision.set_global_policy('mixed_float16')
+print("✓ Mixed Precision (float16) enabled")
+>>>>>>> 6dabdb4 (Change of Tensorflow to PyTorch)
 from pathlib import Path
 from sklearn.model_selection import StratifiedGroupKFold, GroupShuffleSplit
 from sklearn.utils.class_weight import compute_class_weight
@@ -26,6 +64,7 @@ from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, Callback
 warnings.filterwarnings('ignore')
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
+<<<<<<< HEAD
 # ===================== GPU CONFIGURATION =====================
 def configure_gpu():
     """Configure TensorFlow to use GPU with memory growth."""
@@ -45,6 +84,8 @@ def configure_gpu():
 
 configure_gpu()
 
+=======
+>>>>>>> 6dabdb4 (Change of Tensorflow to PyTorch)
 # ===================== SEED & DETERMINISM =====================
 SEED = 42
 
@@ -69,7 +110,11 @@ TEST_TEXT_DIR = "dataset_test/text/"
 OUTPUT_DIR = "outputs/"
 
 IMG_SIZE = 384
+<<<<<<< HEAD
 BATCH_SIZE = 16  # Adjust based on GPU memory
+=======
+BATCH_SIZE = 32  # Increased for better GPU utilization (8GB VRAM)
+>>>>>>> 6dabdb4 (Change of Tensorflow to PyTorch)
 INITIAL_EPOCHS = 5  # Frozen backbone epochs
 FINETUNE_EPOCHS = 20  # Fine-tune epochs
 INITIAL_LR = 1e-4
@@ -596,6 +641,7 @@ def main():
     model, backbone = build_multimodal_model(sex_vocab, loc_vocab, age_normalizer)
     model.summary()
     
+<<<<<<< HEAD
     # ---- Step 8: Prepare Data Generators ----
     print("\n[8/8] Preparing data generators...")
     
@@ -604,6 +650,17 @@ def main():
         augment=True, shuffle=True
     )
     val_gen = MultimodalDataGenerator(
+=======
+    # ---- Step 8: Prepare Data Pipelines ----
+    print("\n[8/8] Preparing tf.data pipelines (GPU-optimized)...")
+    
+    # Use tf.data pipeline instead of Keras Sequence for better GPU utilization
+    train_dataset = create_tf_dataset(
+        train_split_df, label_to_idx, BATCH_SIZE, IMG_SIZE,
+        augment=True, shuffle=True
+    )
+    val_dataset = create_tf_dataset(
+>>>>>>> 6dabdb4 (Change of Tensorflow to PyTorch)
         val_df, label_to_idx, BATCH_SIZE, IMG_SIZE,
         augment=False, shuffle=False
     )
@@ -629,9 +686,15 @@ def main():
     )
     
     history1 = model.fit(
+<<<<<<< HEAD
         train_gen,
         epochs=INITIAL_EPOCHS,
         validation_data=val_gen,
+=======
+        train_dataset,
+        epochs=INITIAL_EPOCHS,
+        validation_data=val_dataset,
+>>>>>>> 6dabdb4 (Change of Tensorflow to PyTorch)
         class_weight=class_weight_dict,
         callbacks=[f1_callback, checkpoint_callback],
         verbose=1
@@ -673,9 +736,15 @@ def main():
     )
     
     history2 = model.fit(
+<<<<<<< HEAD
         train_gen,
         epochs=FINETUNE_EPOCHS,
         validation_data=val_gen,
+=======
+        train_dataset,
+        epochs=FINETUNE_EPOCHS,
+        validation_data=val_dataset,
+>>>>>>> 6dabdb4 (Change of Tensorflow to PyTorch)
         class_weight=class_weight_dict,
         callbacks=[f1_callback2, checkpoint_callback2, early_stopping],
         verbose=1

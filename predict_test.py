@@ -17,6 +17,7 @@ from tensorflow import keras
 warnings.filterwarnings('ignore')
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
+<<<<<<< HEAD
 # ===================== GPU CONFIGURATION =====================
 def configure_gpu():
     """Configure TensorFlow to use GPU with memory growth."""
@@ -36,6 +37,8 @@ def configure_gpu():
 
 configure_gpu()
 
+=======
+>>>>>>> 6dabdb4 (Change of Tensorflow to PyTorch)
 # ===================== CONFIGURATION =====================
 TEST_IMAGE_DIR = "dataset_test/image/"
 TEST_TEXT_DIR = "dataset_test/text/"
