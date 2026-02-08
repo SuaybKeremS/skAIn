@@ -26,6 +26,25 @@ from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, Callback
 warnings.filterwarnings('ignore')
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
+# ===================== GPU CONFIGURATION =====================
+def configure_gpu():
+    """Configure TensorFlow to use GPU with memory growth."""
+    gpus = tf.config.list_physical_devices('GPU')
+    if gpus:
+        try:
+            # Enable memory growth for all GPUs
+            for gpu in gpus:
+                tf.config.experimental.set_memory_growth(gpu, True)
+            print(f"✓ GPU enabled: {len(gpus)} GPU(s) detected")
+            for i, gpu in enumerate(gpus):
+                print(f"  GPU {i}: {gpu.name}")
+        except RuntimeError as e:
+            print(f"GPU configuration error: {e}")
+    else:
+        print("⚠ No GPU detected - running on CPU")
+
+configure_gpu()
+
 # ===================== SEED & DETERMINISM =====================
 SEED = 42
 
