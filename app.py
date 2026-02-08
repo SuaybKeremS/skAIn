@@ -27,13 +27,13 @@ DEVICE = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 # Class names
 CLASS_NAMES = ['akiec', 'bcc', 'bkl', 'df', 'mel', 'nv', 'vasc']
 CLASS_DESCRIPTIONS = {
-    'akiec': 'Aktinik Keratoz / Yer Hücreli Karsinom',
-    'bcc': 'Bazal Hücreli Karsinom',
-    'bkl': 'Benign Keratoz',
-    'df': 'Dermatofibrom',
-    'mel': 'Melanom',
-    'nv': 'Melanositik Nevüs (Ben)',
-    'vasc': 'Vasküler Lezyon'
+    'akiec': 'Actinic Keratosis / Intraepithelial Carcinoma',
+    'bcc': 'Basal Cell Carcinoma',
+    'bkl': 'Benign Keratosis',
+    'df': 'Dermatofibroma',
+    'mel': 'Melanoma',
+    'nv': 'Melanocytic Nevus (Mole)',
+    'vasc': 'Vascular Lesion'
 }
 
 # ===================== MODEL ARCHITECTURE =====================
@@ -152,7 +152,7 @@ def predict():
     try:
         # Get image
         if 'image' not in request.files:
-            return jsonify({'error': 'Görsel yüklenmedi'}), 400
+            return jsonify({'error': 'No image uploaded'}), 400
         
         file = request.files['image']
         img = Image.open(file.stream).convert('RGB')

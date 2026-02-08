@@ -28,7 +28,7 @@ uploadZone.addEventListener('dragleave', () => {
 uploadZone.addEventListener('drop', (e) => {
     e.preventDefault();
     uploadZone.classList.remove('dragover');
-    
+
     const files = e.dataTransfer.files;
     if (files.length > 0 && files[0].type.startsWith('image/')) {
         handleImageUpload(files[0]);
@@ -49,7 +49,7 @@ function handleImageUpload(file) {
         imagePreview.src = e.target.result;
         imagePreview.style.display = 'block';
         uploadContent.style.display = 'none';
-        
+
         // Add success animation
         uploadZone.style.borderColor = '#10b981';
         setTimeout(() => {
@@ -57,7 +57,7 @@ function handleImageUpload(file) {
         }, 1000);
     };
     reader.readAsDataURL(file);
-    
+
     // Update file input
     const dataTransfer = new DataTransfer();
     dataTransfer.items.add(file);
@@ -68,33 +68,33 @@ function handleImageUpload(file) {
 
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    
+
     // Check if image is uploaded
     if (!imageInput.files.length) {
-        showError('Lütfen bir görsel yükleyin');
+        showError('Please upload an image');
         return;
     }
-    
+
     // Show loading state
     setLoading(true);
-    
+
     try {
         const formData = new FormData(form);
-        
+
         const response = await fetch('/predict', {
             method: 'POST',
             body: formData
         });
-        
+
         const data = await response.json();
-        
+
         if (data.error) {
             showError(data.error);
         } else {
             displayResults(data.predictions);
         }
     } catch (error) {
-        showError('Bağlantı hatası. Lütfen tekrar deneyin.');
+        showError('Connection error. Please try again.');
         console.error(error);
     } finally {
         setLoading(false);
@@ -113,11 +113,11 @@ function setLoading(loading) {
 
 function displayResults(predictions) {
     resultsContainer.innerHTML = '';
-    
+
     predictions.forEach((pred, index) => {
         const card = document.createElement('div');
         card.className = `result-card${index === 0 ? ' top-result' : ''}`;
-        
+
         card.innerHTML = `
             <div class="result-rank">#${index + 1}</div>
             <div class="result-info">
@@ -131,18 +131,18 @@ function displayResults(predictions) {
                 </div>
             </div>
         `;
-        
+
         resultsContainer.appendChild(card);
-        
+
         // Animate probability bar
         setTimeout(() => {
             const fill = card.querySelector('.probability-fill');
             fill.style.width = `${pred.probability}%`;
         }, 100 + index * 100);
     });
-    
+
     resultsSection.style.display = 'block';
-    
+
     // Scroll to results
     resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
@@ -169,7 +169,7 @@ function showError(message) {
         z-index: 1000;
         animation: slideIn 0.3s ease-out;
     `;
-    
+
     // Add animation keyframes
     const style = document.createElement('style');
     style.textContent = `
@@ -183,9 +183,9 @@ function showError(message) {
         }
     `;
     document.head.appendChild(style);
-    
+
     document.body.appendChild(toast);
-    
+
     // Remove after 4 seconds
     setTimeout(() => {
         toast.style.animation = 'slideOut 0.3s ease-out forwards';
