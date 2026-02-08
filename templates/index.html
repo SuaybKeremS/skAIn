@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏥 Cilt Hastalığı Tahmin Uygulaması</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="background-animation"></div>
+    
+    <div class="container">
+        <header class="header">
+            <div class="logo">🏥</div>
+            <h1>Cilt Hastalığı Tahmin</h1>
+            <p class="subtitle">Yapay zeka destekli cilt lezyonu analizi</p>
+        </header>
+
+        <main class="main-content">
+            <form id="prediction-form" class="prediction-form">
+                <!-- Image Upload -->
+                <div class="upload-section">
+                    <div class="upload-zone" id="upload-zone">
+                        <div class="upload-content">
+                            <div class="upload-icon">📷</div>
+                            <p class="upload-text">Görsel yüklemek için tıklayın veya sürükleyin</p>
+                            <p class="upload-hint">JPG, PNG formatları desteklenir</p>
+                        </div>
+                        <img id="image-preview" class="image-preview" style="display: none;">
+                        <input type="file" id="image-input" name="image" accept="image/*" hidden>
+                    </div>
+                </div>
+
+                <!-- Metadata Inputs -->
+                <div class="metadata-section">
+                    <div class="input-group">
+                        <label for="age">
+                            <span class="label-icon">🎂</span> Yaş
+                        </label>
+                        <input type="number" id="age" name="age" min="0" max="120" value="45" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="sex">
+                            <span class="label-icon">👤</span> Cinsiyet
+                        </label>
+                        <select id="sex" name="sex" required>
+                            <option value="male">Erkek</option>
+                            <option value="female">Kadın</option>
+                            <option value="unknown">Belirtilmemiş</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="localization">
+                            <span class="label-icon">📍</span> Bölge
+                        </label>
+                        <select id="localization" name="localization" required>
+                            <option value="back">Sırt</option>
+                            <option value="lower extremity">Alt Ekstremite</option>
+                            <option value="trunk">Gövde</option>
+                            <option value="upper extremity">Üst Ekstremite</option>
+                            <option value="abdomen">Karın</option>
+                            <option value="face">Yüz</option>
+                            <option value="chest">Göğüs</option>
+                            <option value="foot">Ayak</option>
+                            <option value="neck">Boyun</option>
+                            <option value="scalp">Saçlı Deri</option>
+                            <option value="hand">El</option>
+                            <option value="ear">Kulak</option>
+                            <option value="genital">Genital</option>
+                            <option value="acral">Akral</option>
+                            <option value="unknown">Belirtilmemiş</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submit-btn">
+                    <span class="btn-text">🔍 Tahmin Yap</span>
+                    <span class="btn-loader" style="display: none;">
+                        <span class="spinner"></span> Analiz ediliyor...
+                    </span>
+                </button>
+            </form>
+
+            <!-- Results Section -->
+            <div id="results-section" class="results-section" style="display: none;">
+                <h2 class="results-title">📊 Tahmin Sonuçları</h2>
+                <div id="results-container" class="results-container"></div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>⚠️ Bu uygulama sadece bilgilendirme amaçlıdır. Kesin tanı için bir dermatoloğa başvurunuz.</p>
+        </footer>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
