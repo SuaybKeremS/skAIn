@@ -1,19 +1,19 @@
-# 🏥 HAM10000 Multimodal Skin Lesion Classification
+# HAM10000 Multimodal Skin Lesion Classification
 
 AI-powered skin disease classification using **multimodal deep learning**.
 
 - **Input**: Image + Age + Sex + Localization  
 - **Output**: Diagnosis (7 classes: akiec, bcc, bkl, df, mel, nv, vasc)
 
-## ✨ Features
+## Features
 
-- 🔬 **Multimodal Architecture**: Combines image features with patient metadata
-- 🚀 **PyTorch + EfficientNetV2-S**: State-of-the-art backbone with mixed precision training
-- 🌐 **Web Application**: Modern, animated UI for predictions
-- 🛡️ **No Data Leakage**: Lesion-based train/val split
-- ⚡ **GPU Optimized**: CUDA support with automatic mixed precision
+- **Multimodal Architecture**: Combines image features with patient metadata
+- **PyTorch + EfficientNetV2-S**: State-of-the-art backbone with mixed precision training
+- **Web Application**: Modern, animated UI for predictions
+- **No Data Leakage**: Lesion-based train/val split
+- **GPU Optimized**: CUDA support with automatic mixed precision
 
-## � Dataset
+## Dataset
 
 This project uses the **HAM10000** ("Human Against Machine with 10000 training images") dataset, a large collection of multi-source dermatoscopic images of common pigmented skin lesions.
 
@@ -34,7 +34,7 @@ This project uses the **HAM10000** ("Human Against Machine with 10000 training i
 - **7** diagnostic categories
 - Includes patient metadata (age, sex, localization)
 
-## �📁 Project Structure
+## Project Structure
 
 ```
 skAIn/
@@ -58,7 +58,7 @@ skAIn/
 └── README.md               # This file
 ```
 
-## 🔧 Installation
+## Installation
 
 ```bash
 # 1. Create virtual environment (recommended)
@@ -74,7 +74,7 @@ pip install timm tqdm pandas scikit-learn pillow flask flask-cors
 python test_gpu_pytorch.py
 ```
 
-## 🚀 Usage
+## Usage
 
 ### 1. Training
 
@@ -98,9 +98,9 @@ python app.py
 Then open: **http://localhost:5000**
 
 Features:
-- 📷 Drag & drop image upload
-- 📊 Animated prediction results
-- 🌙 Modern dark theme UI
+- Drag & drop image upload
+- Animated prediction results
+- Modern dark theme UI
 
 ### 3. Batch Prediction
 
@@ -110,7 +110,7 @@ python predict_test.py
 
 Generates predictions for all test images → `outputs/test_predictions.csv`
 
-## 📊 CSV Format
+## CSV Format
 
 | Column | Type | Description |
 |--------|------|-------------|
@@ -121,7 +121,7 @@ Generates predictions for all test images → `outputs/test_predictions.csv`
 | sex | string | Gender (male/female) |
 | localization | string | Body location |
 
-## 🏗️ Model Architecture
+## Model Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -147,7 +147,7 @@ Generates predictions for all test images → `outputs/test_predictions.csv`
 └─────────────────────────────────────────────────────────────┘
 ```
 
-## ⚙️ Training Configuration
+## Training Configuration
 
 | Parameter | Value |
 |-----------|-------|
@@ -164,13 +164,13 @@ Generates predictions for all test images → `outputs/test_predictions.csv`
 1. **Phase 1**: Backbone frozen, only head trains (5 epochs)
 2. **Phase 2**: Last 30% of backbone unfrozen, fine-tune with low LR (30 epochs)
 
-## 🔒 Data Leakage Prevention
+## Data Leakage Prevention
 
 - Uses **StratifiedGroupKFold** with `lesion_id` as group
 - Same lesion's images never split between train and validation
 - Overlap check performed after split
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 | Issue | Solution |
 |-------|----------|
@@ -179,33 +179,29 @@ Generates predictions for all test images → `outputs/test_predictions.csv`
 | GPU memory error | Reduce `BATCH_SIZE` to 16 or 8 |
 | CUDA not available | Install PyTorch with CUDA: `pip install torch --index-url https://download.pytorch.org/whl/cu121` |
 
-## 📝 Notes
+## Notes
 
 - Missing `age` values are filled with training median
 - Missing `sex` and `localization` are filled with "unknown"
 - Images are normalized with ImageNet mean/std
 - Mixed precision (FP16) used for faster training
 
-## 📚 Citations & References
+## Citations & References
 
 ### Dataset
 
 **HAM10000 Dataset** - Skin Cancer MNIST  
-🔗 [Kaggle: Skin Cancer MNIST HAM10000](https://www.kaggle.com/datasets/kmader/skin-cancer-mnist-ham10000)
+[Kaggle: Skin Cancer MNIST HAM10000](https://www.kaggle.com/datasets/kmader/skin-cancer-mnist-ham10000)
 
 > Tschandl P, Rosendahl C, Kittler H. "The HAM10000 dataset, a large collection of multi-source dermatoscopic images of common pigmented skin lesions". *Sci Data*. 2018;5:180161.
 
 ### Model Architecture
 
 **EfficientNetV2** - Model implementation reference  
-🔗 [GitHub: da2so/efficientnetv2](https://github.com/da2so/efficientnetv2)
+ [GitHub: da2so/efficientnetv2](https://github.com/da2so/efficientnetv2)
 
 > Tan M, Le Q. "EfficientNetV2: Smaller Models and Faster Training". *ICML 2021*.
 
-## 📄 License
+## License
 
 This project is for educational and research purposes.
-
----
-
-Made with ❤️ using PyTorch and Flask
