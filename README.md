@@ -1,88 +1,127 @@
-# HAM10000 Multimodal Skin Lesion Classification
+# 🏥 HAM10000 Multimodal Skin Lesion Classification
 
-Bu proje, HAM10000 veri seti üzerinde **multimodal sınıflandırma** yapmaktadır:
-- **Giriş**: Görüntü + yaş (age) + cinsiyet (sex) + lokalizasyon (localization)
-- **Çıkış**: dx (7 sınıf: akiec, bcc, bkl, df, mel, nv, vasc)
+AI-powered skin disease classification using **multimodal deep learning**.
 
-## 📁 Dosya Yapısı
+- **Input**: Image + Age + Sex + Localization  
+- **Output**: Diagnosis (7 classes: akiec, bcc, bkl, df, mel, nv, vasc)
+
+## ✨ Features
+
+- 🔬 **Multimodal Architecture**: Combines image features with patient metadata
+- 🚀 **PyTorch + EfficientNetV2-S**: State-of-the-art backbone with mixed precision training
+- 🌐 **Web Application**: Modern, animated UI for predictions
+- 🛡️ **No Data Leakage**: Lesion-based train/val split
+- ⚡ **GPU Optimized**: CUDA support with automatic mixed precision
+
+## � Dataset
+
+This project uses the **HAM10000** ("Human Against Machine with 10000 training images") dataset, a large collection of multi-source dermatoscopic images of common pigmented skin lesions.
+
+### Disease Classes
+
+| Code | Disease | Description |
+|------|---------|-------------|
+| akiec | Actinic Keratosis | Pre-cancerous scaly patches |
+| bcc | Basal Cell Carcinoma | Most common skin cancer |
+| bkl | Benign Keratosis | Non-cancerous skin growths |
+| df | Dermatofibroma | Benign fibrous skin nodules |
+| mel | Melanoma | Dangerous form of skin cancer |
+| nv | Melanocytic Nevus | Common moles |
+| vasc | Vascular Lesions | Blood vessel-related skin marks |
+
+### Dataset Statistics
+- **10,015** dermatoscopic images
+- **7** diagnostic categories
+- Includes patient metadata (age, sex, localization)
+
+## �📁 Project Structure
 
 ```
-project/
+skAIn/
 ├── dataset_train/
-│   ├── image/          # Eğitim görüntüleri (.jpg veya .png)
-│   └── text/           # Eğitim CSV dosyası
+│   ├── image/              # Training images (.jpg or .png)
+│   └── text/               # Training CSV file
 ├── dataset_test/
-│   ├── image/          # Test görüntüleri (.jpg veya .png)
-│   └── text/           # Test CSV dosyası
-├── outputs/            # Çıktılar (otomatik oluşturulur)
-│   ├── best_model/     # Kaydedilen en iyi model (SavedModel)
-│   ├── label_map.json  # Etiket eşlemesi
-│   ├── train_history.csv
-│   ├── val_metrics.txt
-│   └── test_predictions.csv
-├── train_multimodal.py # Eğitim scripti
-├── predict_test.py     # Tahmin scripti
-├── requirements.txt    # Bağımlılıklar
-└── README.md           # Bu dosya
+│   ├── image/              # Test images
+│   └── text/               # Test CSV file
+├── outputs/                # Model outputs (auto-created)
+│   ├── best_model.pt       # Saved PyTorch model
+│   ├── label_map.json      # Label mapping
+│   ├── vocabularies.json   # Sex/localization encodings
+│   ├── age_stats.json      # Age normalization stats
+│   └── train_history.csv   # Training history
+├── templates/              # Web app HTML templates
+├── static/                 # Web app CSS and JS
+├── train_multimodal_pytorch.py   # Training script (PyTorch)
+├── app.py                  # Web application (Flask)
+├── predict_test.py         # Batch prediction script
+└── README.md               # This file
 ```
 
-## 🔧 Kurulum
+## 🔧 Installation
 
 ```bash
-# 1. Sanal ortam oluştur (opsiyonel ama önerilir)
+# 1. Create virtual environment (recommended)
 python -m venv venv
-source venv/bin/activate  # Linux/Mac
-# veya
-venv\Scripts\activate     # Windows
+source venv/bin/activate    # Linux/Mac
+venv\Scripts\activate       # Windows
 
-# 2. Bağımlılıkları yükle
-pip install -r requirements.txt
+# 2. Install dependencies
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+pip install timm tqdm pandas scikit-learn pillow flask flask-cors
+
+# 3. Verify GPU (optional)
+python test_gpu_pytorch.py
 ```
 
-## 🚀 Kullanım
+## 🚀 Usage
 
-### 1. Eğitim
+### 1. Training
 
 ```bash
-python train_multimodal.py
+python train_multimodal_pytorch.py
 ```
 
-Bu komut:
-- `dataset_train/text/` içindeki en büyük CSV dosyasını bulur
-- Verileri lesion_id bazlı böler (data leakage yok)
-- EfficientNetV2-S backbone ile modeli eğitir
-- En iyi modeli `outputs/best_model/` dizinine kaydeder
-- Eğitim geçmişini ve validasyon metriklerini kaydeder
+This will:
+- Find the largest CSV in `dataset_train/text/`
+- Split data by lesion_id (no leakage)
+- Train EfficientNetV2-S backbone model
+- Save best model to `outputs/best_model.pt`
+- Log training history and metrics
 
-### 2. Test Tahmini
+### 2. Web Application
+
+```bash
+python app.py
+```
+
+Then open: **http://localhost:5000**
+
+Features:
+- 📷 Drag & drop image upload
+- 📊 Animated prediction results
+- 🌙 Modern dark theme UI
+
+### 3. Batch Prediction
 
 ```bash
 python predict_test.py
 ```
 
-Bu komut:
-- Eğitilmiş modeli yükler
-- `dataset_test/text/` içindeki CSV'den test verilerini okur
-- Her görüntü için tahmin yapar
-- Sonuçları `outputs/test_predictions.csv` dosyasına kaydeder
+Generates predictions for all test images → `outputs/test_predictions.csv`
 
-## 📊 CSV Formatı
+## 📊 CSV Format
 
-### Eğitim CSV Kolonları
-| Kolon | Tip | Açıklama |
-|-------|-----|----------|
-| lesion_id | string | Lezyon ID (split için grup) |
-| image_id | string | Görüntü dosya adı (uzantısız) |
-| dx | string | Tanı (akiec, bcc, bkl, df, mel, nv, vasc) |
-| dx_type | string | (Kullanılmıyor) |
-| age | float | Yaş |
-| sex | string | Cinsiyet (male/female) |
-| localization | string | Vücut bölgesi |
+| Column | Type | Description |
+|--------|------|-------------|
+| lesion_id | string | Lesion ID (used for grouping) |
+| image_id | string | Image filename (no extension) |
+| dx | string | Diagnosis (akiec, bcc, bkl, df, mel, nv, vasc) |
+| age | float | Patient age |
+| sex | string | Gender (male/female) |
+| localization | string | Body location |
 
-### Test CSV Kolonları
-Aynı format, ancak `dx` kolonu olmayabilir veya boş olabilir.
-
-## 🏗️ Model Mimarisi
+## 🏗️ Model Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -92,75 +131,81 @@ Aynı format, ancak `dx` kolonu olmayabilir veya boş olabilir.
 │  ┌─────────────────┐  ┌───────────────────────────────────┐ │
 │  │  Image Branch   │  │        Metadata Branch            │ │
 │  │                 │  │                                   │ │
-│  │ EfficientNetV2S │  │ Age: Normalization → MLP(32→64)   │ │
-│  │ (384x384x3)     │  │ Sex: StringLookup → Embedding(8)  │ │
-│  │       ↓         │  │ Loc: StringLookup → Embedding(16) │ │
-│  │ GlobalAvgPool2D │  │           ↓                       │ │
-│  │   Dropout(0.3)  │  │     Concat → Dense(128)           │ │
-│  │                 │  │       Dropout(0.2)                │ │
+│  │ EfficientNetV2S │  │ Age: Normalize → MLP(32→64)       │ │
+│  │ (384×384×3)     │  │ Sex: Embedding(8)                 │ │
+│  │       ↓         │  │ Loc: Embedding(16)                │ │
+│  │  1280 features  │  │           ↓                       │ │
+│  │                 │  │     Concat → Dense(128)           │ │
 │  └────────┬────────┘  └─────────────────┬─────────────────┘ │
 │           │                             │                   │
 │           └─────────────┬───────────────┘                   │
 │                         ↓                                   │
-│                   Concatenate                               │
+│                   Concatenate (1408)                        │
 │                         ↓                                   │
-│                Dense(512, ReLU)                             │
-│                 Dropout(0.3)                                │
-│                Dense(128, ReLU)                             │
-│                         ↓                                   │
-│               Dense(7, Softmax)                             │
+│                Dense(512) → Dense(128) → Dense(7)           │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-## 🔒 Data Leakage Koruması
+## ⚙️ Training Configuration
 
-- **StratifiedGroupKFold** kullanılır
-- `lesion_id` grup olarak kullanılır
-- Aynı lezyonun görüntüleri asla train ve validation'a birlikte gitmez
-- Split sonrası overlap kontrolü yapılır
-
-## ⚙️ Eğitim Detayları
-
-| Parametre | Değer |
+| Parameter | Value |
 |-----------|-------|
-| Image Size | 384x384 |
-| Batch Size | 16 |
-| Optimizer | Adam |
+| Image Size | 384×384 |
+| Batch Size | 32 |
+| Optimizer | AdamW |
 | Initial LR | 1e-4 |
 | Fine-tune LR | 1e-5 |
 | Frozen Epochs | 5 |
-| Fine-tune Epochs | 20 |
+| Fine-tune Epochs | 30 |
 | Early Stopping | patience=5 |
 
-### İki Aşamalı Eğitim
-1. **Aşama 1**: Backbone dondurulmuş, sadece head eğitilir (5 epoch)
-2. **Aşama 2**: Backbone'un son %30'u açılır, düşük LR ile fine-tune (20 epoch)
+### Two-Phase Training
+1. **Phase 1**: Backbone frozen, only head trains (5 epochs)
+2. **Phase 2**: Last 30% of backbone unfrozen, fine-tune with low LR (30 epochs)
 
-## 📈 Çıktılar
+## 🔒 Data Leakage Prevention
 
-### `outputs/test_predictions.csv`
-```csv
-image_id,predicted_dx,p_akiec,p_bcc,p_bkl,p_df,p_mel,p_nv,p_vasc
-ISIC_0024306,nv,0.01,0.02,0.05,0.01,0.03,0.85,0.03
-ISIC_0024307,mel,0.02,0.03,0.10,0.02,0.75,0.05,0.03
-...
-```
+- Uses **StratifiedGroupKFold** with `lesion_id` as group
+- Same lesion's images never split between train and validation
+- Overlap check performed after split
 
-### `outputs/val_metrics.txt`
-- Macro F1 Score
-- Classification Report
-- Confusion Matrix
+## 🐛 Troubleshooting
 
-## 🐛 Hata Giderme
+| Issue | Solution |
+|-------|----------|
+| "No CSV files found" | Check folder paths |
+| "Image not found" | Ensure images have `.jpg` or `.png` extension |
+| GPU memory error | Reduce `BATCH_SIZE` to 16 or 8 |
+| CUDA not available | Install PyTorch with CUDA: `pip install torch --index-url https://download.pytorch.org/whl/cu121` |
 
-1. **"No CSV files found"**: Klasör yollarını kontrol edin
-2. **"Image not found"**: Görüntü dosyalarının `.jpg` veya `.png` uzantılı olduğundan emin olun
-3. **GPU bellek hatası**: `BATCH_SIZE` değerini azaltın (8 veya 4)
+## 📝 Notes
 
-## 📝 Notlar
+- Missing `age` values are filled with training median
+- Missing `sex` and `localization` are filled with "unknown"
+- Images are normalized with ImageNet mean/std
+- Mixed precision (FP16) used for faster training
 
-- Eksik `age` değerleri train medyanı ile doldurulur
-- Eksik `sex` ve `localization` değerleri "unknown" ile doldurulur
-- Her image_id birden fazla satırda olabilir (aynı görüntü farklı metadata ile)
-- `dx_type` kolonu modelde kullanılmaz
+## 📚 Citations & References
+
+### Dataset
+
+**HAM10000 Dataset** - Skin Cancer MNIST  
+🔗 [Kaggle: Skin Cancer MNIST HAM10000](https://www.kaggle.com/datasets/kmader/skin-cancer-mnist-ham10000)
+
+> Tschandl P, Rosendahl C, Kittler H. "The HAM10000 dataset, a large collection of multi-source dermatoscopic images of common pigmented skin lesions". *Sci Data*. 2018;5:180161.
+
+### Model Architecture
+
+**EfficientNetV2** - Model implementation reference  
+🔗 [GitHub: da2so/efficientnetv2](https://github.com/da2so/efficientnetv2)
+
+> Tan M, Le Q. "EfficientNetV2: Smaller Models and Faster Training". *ICML 2021*.
+
+## 📄 License
+
+This project is for educational and research purposes.
+
+---
+
+Made with ❤️ using PyTorch and Flask
